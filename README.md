@@ -16,7 +16,7 @@ LLMs are trained on static snapshots of the world. They have no clock, no source
 
 | # | Skill | Folder | OS Support | Status | Description |
 |---|-------|--------|------------|--------|-------------|
-| 1 | **Get Today's Date** | `skills/get-date/` | 🪟 Win + 🐧 Unix | ✅ Done | Fetch the real current date/time via the OS clock — never guess. |
+| 1 | **Get Today's Date** | `skills/get-date/` | 🪟 Win + 🐧 Unix | ✅ Done | Timezone-aware date/time via OS clock — IANA timezones, DST, world clock, all formats. |
 | 2 | **Generate Random Number** | `skills/random-number/` | 🪟 Win + 🐧 Unix | ✅ Done | Produce a cryptographically-seeded random number using OS entropy. |
 | 3 | **Basic Math** | `skills/basic-math/` | 🪟 Win + 🐧 Unix | ✅ Done | Evaluate arithmetic expressions with a real calculator to avoid rounding errors. |
 | 4 | **Web Search / Live Data** | `skills/web-search/` | 🪟 Win + 🐧 Unix | ✅ Done | Fetch live facts from the web that the model's training data doesn't contain. |
@@ -26,6 +26,13 @@ LLMs are trained on static snapshots of the world. They have no clock, no source
 | 8 | **UUID / Token Generation** | `skills/uuid-gen/` | 🪟 Win + 🐧 Unix | ✅ Done | Generate valid UUID v4s or secure random tokens — not made-up strings. |
 | 9 | **Unit Conversion** | `skills/convert/` | 🪟 Win + 🐧 Unix | ✅ Done | Accurate conversion for length, weight, temperature, volume, speed, and data sizes. |
 | 10 | **Read Environment Variables** | `skills/env-vars/` | 🪟 Win + 🐧 Unix | ✅ Done | Inspect real runtime env vars with automatic secret redaction. |
+| 11 | **Hash / Checksum** | `skills/hash/` | 🪟 Win + 🐧 Unix | ✅ Done | Compute SHA256/SHA512/SHA1/MD5 hashes of text or files — LLMs cannot do this. |
+| 12 | **Base64 Encode/Decode** | `skills/base64/` | 🪟 Win + 🐧 Unix | ✅ Done | Encode/decode base64 (including URL-safe) without padding errors. |
+| 13 | **Unix Timestamp Conversion** | `skills/timestamp/` | 🪟 Win + 🐧 Unix | ✅ Done | Convert Unix epoch ↔ human dates with timezone support. |
+| 14 | **Network Info** | `skills/network-info/` | 🪟 Win + 🐧 Unix | ✅ Done | Get real IP addresses, hostname, interfaces, and public IP — never guess. |
+| 15 | **Git Info** | `skills/git-info/` | 🪟 Win + 🐧 Unix | ✅ Done | Read current branch, status, recent commits, remotes — read-only, no guessing. |
+| 16 | **Regex Test** | `skills/regex/` | 🪟 Win + 🐧 Unix | ✅ Done | Test patterns, extract matches, replace, or count — handles edge cases LLMs get wrong. |
+| 17 | **Password Generator** | `skills/password-gen/` | 🪟 Win + 🐧 Unix | ✅ Done | Generate cryptographically secure passwords and passphrases with configurable rules. |
 
 ---
 
