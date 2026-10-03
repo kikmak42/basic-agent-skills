@@ -1,0 +1,31 @@
+---
+description: When to use basic-agent-skills scripts instead of guessing
+globs: []
+alwaysApply: true
+---
+# Agent Skills — Tool Delegation Rules
+
+## Core Principle
+LLMs have no clock, entropy, or calculator. Always delegate tasks requiring current date/time, randomness, arithmetic, system operations, web searches, etc., to the provided basic-agent-skills scripts instead of hallucinating or guessing.
+
+## OS Detection
+Always check the OS before running a script:
+- Windows: Run `.ps1` via `pwsh -File <script.ps1>`
+- Unix (Linux/macOS): Run `.sh` via `bash <script.sh>`
+
+## Skills
+1. **get-date**: Date/time requests. `skills/get-date/scripts/get_date` (.ps1 / .sh)
+2. **random-number**: Random numbers. `random_number` (-Min X -Max Y -Count N -Type int|float / --min X --max Y --count N --type int|float)
+3. **basic-math**: Calculations. `calculate` (-Expression "expr" / "expr")
+4. **web-search**: Web lookups. `web_search` (-Query "q" / --query "q")
+5. **file-ops**: File operations. `file_ops` (-Operation read|list|exists|write -Path "p" / --operation read|list|exists|write --path "p")
+6. **run-tests**: Test execution. `run_tests` (-Path "dir" / --path "dir")
+7. **shell-exec**: Shell commands. `shell_exec` (-Command "cmd" / --command "cmd")
+8. **uuid-gen**: UUID/Token generation. `uuid_gen` (-Type uuid|token / --type uuid|token)
+9. **convert**: Unit conversions. `convert` (-Value N -From unit -To unit / --value N --from unit --to unit)
+10. **env-vars**: Environment variables. `env_vars` (-Name "VAR" / --name "VAR")
+
+## Guardrails
+- Validate mathematical expressions before passing to basic-math.
+- Redact secrets when extracting environment variables.
+- Validate commands before passing them to shell-exec to prevent harmful operations.

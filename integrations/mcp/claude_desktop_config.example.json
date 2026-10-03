@@ -1,0 +1,10 @@
+{
+  "mcpServers": {
+    "basic-agent-skills": {
+      "command": "python",
+      "args": ["/ABSOLUTE/PATH/TO/integrations/mcp/server.py"],
+      "__comment_windows_path_note__": "On Windows, use absolute paths with forward slashes like 'C:/Users/Name/Path/To/server.py' or escaped backslashes.",
+      "__comment_config_location__": "Place this file in '%APPDATA%/Claude/claude_desktop_config.json' on Windows or '~/Library/Application Support/Claude/claude_desktop_config.json' on macOS."
+    }
+  }
+}

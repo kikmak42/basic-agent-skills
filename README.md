@@ -147,22 +147,97 @@ basic-agent-skills/
 
 ---
 
-## Using Skills in Another Agent / Project
+## Integrations
 
-These skills are designed to be dropped into **any** Antigravity workspace:
+The skills work with **every major AI coding assistant and agent framework** — not just Antigravity. The `integrations/` directory contains ready-to-use adapters for each.
 
-1. Copy the `skills/` folder into your project's `.agents/` directory:
-   ```
-   your-project/
-   └── .agents/
-       └── skills/
-           ├── get-date/
-           ├── random-number/
-           └── ...
-   ```
-2. Optionally copy `guardrails/` alongside for safety enforcement.
-3. Antigravity will auto-discover the skills and make them available to the agent.
-4. The agent reads each `SKILL.md` and uses the OS-appropriate script automatically.
+> **Design philosophy:** Every integration is a thin wrapper around the same scripts. Fix a bug in a script and it's fixed everywhere — Claude, Cursor, LangChain, AutoGen, all of them.
+
+### 🖥️ AI Coding Assistants / IDEs
+
+| Platform | Integration Type | File to copy | Where it goes |
+|----------|-----------------|-------------|---------------|
+| **Antigravity** | Native `SKILL.md` discovery | `skills/` | `.agents/skills/` in your project |
+| **Claude Code** | `CLAUDE.md` instructions | [`integrations/ide/claude/CLAUDE.md`](./integrations/ide/claude/CLAUDE.md) | Project root |
+| **Cursor** | `.mdc` rule (`alwaysApply: true`) | [`integrations/ide/cursor/.cursor/`](./integrations/ide/cursor/.cursor/) | Project root |
+| **VS Code Copilot** | Copilot instructions | [`integrations/ide/vscode/.github/`](./integrations/ide/vscode/.github/) | Project root |
+| **Windsurf** | `.windsurfrules` | [`integrations/ide/windsurf/.windsurfrules`](./integrations/ide/windsurf/.windsurfrules) | Project root |
+| **Any MCP client** | FastMCP server | [`integrations/mcp/server.py`](./integrations/mcp/server.py) | Run as a server process |
+
+**MCP** (Model Context Protocol) is the most universal option — it works with Claude Desktop, Cursor's MCP support, VS Code extensions like Continue/Cline, and any other MCP-compatible client:
+
+```bash
+pip install -r integrations/mcp/requirements.txt
+python integrations/mcp/server.py
+```
+
+Then point your client at the server using [`integrations/mcp/claude_desktop_config.example.json`](./integrations/mcp/claude_desktop_config.example.json) as a reference.
+
+See [`integrations/ide/README.md`](./integrations/ide/README.md) for detailed setup instructions per IDE.
+
+---
+
+### 🐍 Agent Frameworks / SDKs
+
+All adapters share a common [`integrations/frameworks/shared/skill_runner.py`](./integrations/frameworks/shared/skill_runner.py) that handles OS detection and subprocess execution.
+
+| Framework | Package | Import |
+|-----------|---------|--------|
+| **LangChain** | `langchain-core>=0.3` | `from integrations.frameworks.langchain.tools import ALL_TOOLS` |
+| **AWS Strands** | `strands-agents>=0.1` | `from integrations.frameworks.strands.tools import ALL_TOOLS` |
+| **CrewAI** | `crewai>=0.80` | `from integrations.frameworks.crewai.tools import ALL_TOOLS` |
+| **AutoGen** | `autogen-agentchat>=0.4` | `from integrations.frameworks.autogen.tools import ALL_TOOLS` |
+| **LlamaIndex** | `llama-index-core>=0.11` | `from integrations.frameworks.llamaindex.tools import ALL_TOOLS` |
+
+**LangChain quick start:**
+```python
+from langchain_openai import ChatOpenAI
+from langchain.agents import create_tool_calling_agent, AgentExecutor
+from integrations.frameworks.langchain.tools import ALL_TOOLS
+
+llm = ChatOpenAI(model="gpt-4o")
+executor = AgentExecutor(agent=create_tool_calling_agent(llm, ALL_TOOLS, prompt), tools=ALL_TOOLS)
+executor.invoke({"input": "What is today's date and what is 17 * 83?"})
+```
+
+See [`integrations/frameworks/README.md`](./integrations/frameworks/README.md) for full examples per framework and [`integrations/README.md`](./integrations/README.md) for the complete integration map.
+
+---
+
+## Repository Structure
+
+```
+basic-agent-skills/
+├── README.md
+├── skills/                        # 10 OS-agnostic agent skills
+│   └── <skill>/
+│       ├── SKILL.md               # Agent instructions (OS detection + steps)
+│       └── scripts/
+│           ├── <script>.ps1       # Windows (PowerShell)
+│           └── <script>.sh        # Linux / macOS (Bash)
+├── guardrails/                    # Safety constraints for all skills
+│   ├── GUARDRAILS.md
+│   └── scripts/                   # validate_expression, validate_path, validate_command, redact_secrets
+├── evals/                         # pytest evaluation framework
+│   ├── fixtures/                  # YAML test cases (1 per skill)
+│   └── tests/                     # pytest test files (1 per skill)
+└── integrations/                  # Adapters for every AI platform
+    ├── README.md
+    ├── ide/                       # Drop-in files for coding assistants
+    │   ├── claude/CLAUDE.md
+    │   ├── cursor/.cursor/rules/
+    │   ├── vscode/.github/
+    │   └── windsurf/.windsurfrules
+    ├── mcp/                       # FastMCP server (universal)
+    │   └── server.py
+    └── frameworks/                # Python SDK adapters
+        ├── shared/skill_runner.py # OS-aware script runner (shared by all)
+        ├── langchain/tools.py
+        ├── strands/tools.py
+        ├── crewai/tools.py
+        ├── autogen/tools.py
+        └── llamaindex/tools.py
+```
 
 ---
 
@@ -173,5 +248,8 @@ These skills are designed to be dropped into **any** Antigravity workspace:
 3. Add **both** a `.ps1` (Windows) and a `.sh` (Linux/macOS) script under `scripts/`.
 4. Include OS detection instructions in `SKILL.md`.
 5. Add YAML fixtures in `evals/fixtures/<skill-name>.yaml` and a test file in `evals/tests/test_<skill_name>.py`.
-6. Review `guardrails/GUARDRAILS.md` and add any skill-specific guardrail notes.
-7. Update the **Skill Registry** table above.
+6. Add an `@tool` function to each `integrations/frameworks/*/tools.py`.
+7. Add the skill to `integrations/mcp/server.py`.
+8. Add instructions for the skill to all IDE rules files in `integrations/ide/`.
+9. Review `guardrails/GUARDRAILS.md` and add skill-specific guardrail notes.
+10. Update the **Skill Registry** table in this README.

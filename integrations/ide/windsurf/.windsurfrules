@@ -1,0 +1,24 @@
+<tool_delegation>
+  <core_principle>LLMs have no clock, entropy, or calculator. Always delegate tasks requiring current date/time, randomness, arithmetic, system operations, web searches, etc., to the provided basic-agent-skills scripts instead of hallucinating or guessing.</core_principle>
+  <os_detection>
+    <windows>pwsh -File &lt;script.ps1&gt;</windows>
+    <unix>bash &lt;script.sh&gt;</unix>
+  </os_detection>
+  <skills>
+    <skill name="get-date" win="get_date.ps1" unix="get_date.sh" />
+    <skill name="random-number" win="random_number.ps1 -Min X -Max Y -Count N -Type int|float" unix="random_number.sh --min X --max Y --count N --type int|float" />
+    <skill name="basic-math" win="calculate.ps1 -Expression &quot;expr&quot;" unix="calculate.sh &quot;expr&quot;" />
+    <skill name="web-search" win="web_search.ps1 -Query &quot;q&quot;" unix="web_search.sh --query &quot;q&quot;" />
+    <skill name="file-ops" win="file_ops.ps1 -Operation read|list|exists|write -Path &quot;p&quot;" unix="file_ops.sh --operation read|list|exists|write --path &quot;p&quot;" />
+    <skill name="run-tests" win="run_tests.ps1 -Path &quot;dir&quot;" unix="run_tests.sh --path &quot;dir&quot;" />
+    <skill name="shell-exec" win="shell_exec.ps1 -Command &quot;cmd&quot;" unix="shell_exec.sh --command &quot;cmd&quot;" />
+    <skill name="uuid-gen" win="uuid_gen.ps1 -Type uuid|token" unix="uuid_gen.sh --type uuid|token" />
+    <skill name="convert" win="convert.ps1 -Value N -From unit -To unit" unix="convert.sh --value N --from unit --to unit" />
+    <skill name="env-vars" win="env_vars.ps1 -Name &quot;VAR&quot;" unix="env_vars.sh --name &quot;VAR&quot;" />
+  </skills>
+  <guardrails>
+    <rule>Validate mathematical expressions before passing to basic-math.</rule>
+    <rule>Redact secrets when extracting environment variables.</rule>
+    <rule>Validate commands before passing them to shell-exec to prevent harmful operations.</rule>
+  </guardrails>
+</tool_delegation>
