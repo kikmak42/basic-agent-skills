@@ -8,7 +8,7 @@ A collection of **OS-agnostic** skills that patch well-known LLM blind spots —
 
 ## Why This Exists
 
-LLMs are trained on static snapshots of the world. They have no clock, no source of entropy, and no guaranteed arithmetic precision. This repo teaches the agent the correct procedure for each of these tasks so it **always reaches for the right tool** instead of hallucinating an answer.
+LLMs are trained on static snapshots of the world. They have no clock, no source of entropy, no arithmetic guarantees, and no access to live data or the file system. This repo teaches agents the correct procedure for each of these tasks so they **always reach for the right tool** instead of hallucinating an answer.
 
 ---
 
@@ -19,66 +19,130 @@ LLMs are trained on static snapshots of the world. They have no clock, no source
 | 1 | **Get Today's Date** | `skills/get-date/` | 🪟 Win + 🐧 Unix | ✅ Done | Fetch the real current date/time via the OS clock — never guess. |
 | 2 | **Generate Random Number** | `skills/random-number/` | 🪟 Win + 🐧 Unix | ✅ Done | Produce a cryptographically-seeded random number using OS entropy. |
 | 3 | **Basic Math** | `skills/basic-math/` | 🪟 Win + 🐧 Unix | ✅ Done | Evaluate arithmetic expressions with a real calculator to avoid rounding errors. |
-| 4 | **Web Search / Live Data** | `skills/web-search/` | 🪟 Win + 🐧 Unix | 🔜 Planned | Retrieve up-to-date facts the model's training data doesn't contain. |
-| 5 | **File System Operations** | `skills/file-ops/` | 🪟 Win + 🐧 Unix | 🔜 Planned | Reliable read/write/list operations without guessing paths or contents. |
-| 6 | **Run Unit Tests** | `skills/run-tests/` | 🪟 Win + 🐧 Unix | 🔜 Planned | Execute the project's test suite and surface results instead of predicting them. |
-| 7 | **Execute Shell Command** | `skills/shell-exec/` | 🪟 Win + 🐧 Unix | 🔜 Planned | Run arbitrary shell commands and return real stdout/stderr. |
-| 8 | **UUID / Token Generation** | `skills/uuid-gen/` | 🪟 Win + 🐧 Unix | 🔜 Planned | Generate valid UUIDs or secure tokens — not made-up strings. |
-| 9 | **Currency / Unit Conversion** | `skills/convert/` | 🪟 Win + 🐧 Unix | 🔜 Planned | Live conversion rates or precise unit math via a dedicated script. |
-| 10 | **Read Environment Variables** | `skills/env-vars/` | 🪟 Win + 🐧 Unix | 🔜 Planned | Inspect real runtime env vars instead of assuming defaults. |
+| 4 | **Web Search / Live Data** | `skills/web-search/` | 🪟 Win + 🐧 Unix | ✅ Done | Fetch live facts from the web that the model's training data doesn't contain. |
+| 5 | **File System Operations** | `skills/file-ops/` | 🪟 Win + 🐧 Unix | ✅ Done | Reliable read/write/list/exists operations — never guess file contents or paths. |
+| 6 | **Run Unit Tests** | `skills/run-tests/` | 🪟 Win + 🐧 Unix | ✅ Done | Auto-detect framework (pytest/jest/dotnet/go/cargo) and run the real test suite. |
+| 7 | **Execute Shell Command** | `skills/shell-exec/` | 🪟 Win + 🐧 Unix | ✅ Done | Run commands safely with blocklist validation — return real stdout/stderr. |
+| 8 | **UUID / Token Generation** | `skills/uuid-gen/` | 🪟 Win + 🐧 Unix | ✅ Done | Generate valid UUID v4s or secure random tokens — not made-up strings. |
+| 9 | **Unit Conversion** | `skills/convert/` | 🪟 Win + 🐧 Unix | ✅ Done | Accurate conversion for length, weight, temperature, volume, speed, and data sizes. |
+| 10 | **Read Environment Variables** | `skills/env-vars/` | 🪟 Win + 🐧 Unix | ✅ Done | Inspect real runtime env vars with automatic secret redaction. |
 
 ---
 
-## Status Legend
+## Guardrails
 
-| Badge | Meaning |
-|-------|---------|
-| ✅ Done | Skill created and ready to use |
-| 🚧 WIP | Skill in progress |
-| 🔜 Planned | On the roadmap, not yet built |
-| ❌ Blocked | Blocked by a dependency or decision |
+All skills follow a shared set of **safety guardrails** defined in [`guardrails/GUARDRAILS.md`](./guardrails/GUARDRAILS.md). Six guardrail categories apply across all skills:
+
+| Category | Description |
+|----------|-------------|
+| **Input Validation** | All inputs are sanitised before being passed to scripts (blocks injection, traversal, etc.) |
+| **Secret Redaction** | Outputs containing secret-looking values are automatically redacted (`[REDACTED]`) |
+| **Scope Limiting** | Each skill operates only within its defined domain — no cross-skill side effects |
+| **Command Safety** | `shell-exec` validates every command against a blocklist before execution |
+| **Fail Safe** | If a script errors, the agent reports the error — it never guesses a fallback answer |
+| **Transparency** | For destructive operations, the agent shows the user what will run before running it |
+
+Guardrail validation scripts live in [`guardrails/scripts/`](./guardrails/scripts/):
+
+| Script | Purpose |
+|--------|---------|
+| `validate_expression.ps1` / `.sh` | Blocks dangerous .NET/system calls in math expressions |
+| `validate_path.ps1` / `.sh` | Blocks path traversal and access to sensitive system files |
+| `validate_command.ps1` / `.sh` | Enforces shell command blocklist before execution |
+| `redact_secrets.ps1` / `.sh` | Redacts secret-looking key=value pairs in any output |
 
 ---
 
-## OS Detection
+## Evals
 
-Each skill's `SKILL.md` instructs the agent to detect the OS before running a script. The standard pattern used across all skills:
+The [`evals/`](./evals/) directory contains a **pytest-based evaluation framework** that tests the scripts directly (not the LLM), following the _inspect-ai_ / script-eval convention.
 
-**In PowerShell:**
-```powershell
-if ($IsWindows) { <run .ps1> }
-elseif ($IsLinux -or $IsMacOS) { bash <run .sh> }
+```bash
+# Install dependencies
+pip install -r evals/requirements.txt
+
+# Run all evals
+pytest evals/tests/ -v
+
+# Run with scorecard summary
+python evals/run_evals.py
 ```
 
-**In Bash:**
+Evals are organized per skill:
+
+| Eval file | What it tests |
+|-----------|--------------|
+| `test_get_date.py` | Output is non-empty, contains year + day/month name, ISO 8601 present |
+| `test_random_number.py` | Integers in range, correct count, floats in [0,1) |
+| `test_basic_math.py` | Arithmetic correctness with `pytest.approx` float tolerance |
+| `test_uuid_gen.py` | UUID v4 regex, token hex length, correct count |
+| `test_convert.py` | Numeric accuracy within tolerance (km→mi, °C→°F, kg→lb, GB→MB) |
+| `test_env_vars.py` | Secret redaction works; known var returns non-empty |
+| `test_guardrails.py` | Validation scripts block bad inputs (exit 1) and pass good inputs (exit 0) |
+| `test_web_search.py` | _(skipped — requires network)_ |
+| `test_file_ops.py` | _(skipped — requires filesystem setup)_ |
+| `test_run_tests.py` | _(skipped — requires project with test suite)_ |
+| `test_shell_exec.py` | _(skipped — requires controlled environment)_ |
+
+---
+
+## OS Detection Pattern
+
+Every skill detects the OS before running a script. The standard pattern used:
+
+**PowerShell:**
+```powershell
+if ($IsWindows) {
+    .\skills\<name>\scripts\<script>.ps1 [args]
+} elseif ($IsLinux -or $IsMacOS) {
+    bash ./skills/<name>/scripts/<script>.sh [args]
+}
+```
+
+**Bash:**
 ```bash
 case "$(uname -s)" in
-  Linux|Darwin) bash ./skills/<name>/scripts/<script>.sh ;;
-  MINGW*|CYGWIN*) pwsh ./skills/<name>/scripts/<script>.ps1 ;;
+  Linux|Darwin) bash ./skills/<name>/scripts/<script>.sh [args] ;;
+  MINGW*|CYGWIN*) pwsh ./skills/<name>/scripts/<script>.ps1 [args] ;;
 esac
 ```
 
 ---
 
-## Structure
+## Repository Structure
 
 ```
-skills/
-├── get-date/
-│   ├── SKILL.md
+basic-agent-skills/
+├── README.md
+├── skills/                        # 10 OS-agnostic agent skills
+│   ├── get-date/
+│   ├── random-number/
+│   ├── basic-math/
+│   ├── web-search/
+│   ├── file-ops/
+│   ├── run-tests/
+│   ├── shell-exec/
+│   ├── uuid-gen/
+│   ├── convert/
+│   └── env-vars/
+│       ├── SKILL.md               # Agent instructions (OS detection + steps)
+│       └── scripts/
+│           ├── <script>.ps1       # Windows (PowerShell)
+│           └── <script>.sh        # Linux / macOS (Bash)
+├── guardrails/                    # Safety constraints for all skills
+│   ├── GUARDRAILS.md
 │   └── scripts/
-│       ├── get_date.ps1      # Windows (PowerShell)
-│       └── get_date.sh       # Linux / macOS (Bash)
-├── random-number/
-│   ├── SKILL.md
-│   └── scripts/
-│       ├── random_number.ps1 # Windows (PowerShell)
-│       └── random_number.sh  # Linux / macOS (Bash)
-└── basic-math/
-    ├── SKILL.md
-    └── scripts/
-        ├── calculate.ps1     # Windows (PowerShell / .NET Math)
-        └── calculate.sh      # Linux / macOS (python3 or bc)
+│       ├── validate_expression.{ps1,sh}
+│       ├── validate_path.{ps1,sh}
+│       ├── validate_command.{ps1,sh}
+│       └── redact_secrets.{ps1,sh}
+└── evals/                         # pytest evaluation framework
+    ├── README.md
+    ├── requirements.txt
+    ├── conftest.py
+    ├── run_evals.py
+    ├── fixtures/                  # YAML test case definitions (1 per skill)
+    └── tests/                     # pytest test files (1 per skill)
 ```
 
 ---
@@ -94,11 +158,11 @@ These skills are designed to be dropped into **any** Antigravity workspace:
        └── skills/
            ├── get-date/
            ├── random-number/
-           └── basic-math/
+           └── ...
    ```
-2. Antigravity will auto-discover them and make them available to the agent.
-3. The agent reads each skill's `SKILL.md` and will use the OS-appropriate
-   script automatically.
+2. Optionally copy `guardrails/` alongside for safety enforcement.
+3. Antigravity will auto-discover the skills and make them available to the agent.
+4. The agent reads each `SKILL.md` and uses the OS-appropriate script automatically.
 
 ---
 
@@ -108,4 +172,6 @@ These skills are designed to be dropped into **any** Antigravity workspace:
 2. Add a `SKILL.md` with YAML frontmatter (`name`, `description`).
 3. Add **both** a `.ps1` (Windows) and a `.sh` (Linux/macOS) script under `scripts/`.
 4. Include OS detection instructions in `SKILL.md`.
-5. Update the **Skill Registry** table above with its status.
+5. Add YAML fixtures in `evals/fixtures/<skill-name>.yaml` and a test file in `evals/tests/test_<skill_name>.py`.
+6. Review `guardrails/GUARDRAILS.md` and add any skill-specific guardrail notes.
+7. Update the **Skill Registry** table above.

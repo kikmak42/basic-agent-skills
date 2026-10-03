@@ -1,0 +1,4 @@
+cases:
+  - id: shell-exec::skip_test
+    skip: true
+    reason: 'requires network/filesystem/external deps'

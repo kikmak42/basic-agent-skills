@@ -1,0 +1,17 @@
+skill: uuid-gen
+description: generates UUIDs
+cases:
+  - id: uuid-gen::single_uuid
+    args: []
+    assertions:
+      regex: '^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$'
+      count: 1
+  - id: uuid-gen::token_gen
+    args: ["--token", "--length", "16"]
+    assertions:
+      token_length: 32
+      count: 1
+  - id: uuid-gen::count_3
+    args: ["--count", "3"]
+    assertions:
+      count: 3

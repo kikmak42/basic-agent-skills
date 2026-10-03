@@ -1,0 +1,12 @@
+skill: env-vars
+description: reads environment variables
+cases:
+  - id: env-vars::read_path
+    args: ["--name", "PATH"]
+    assertions:
+      not_empty: true
+  - id: env-vars::read_secret
+    args: ["--name", "TEST_SECRET_KEY"]
+    env: {"TEST_SECRET_KEY": "mysecretvalue"}
+    assertions:
+      contains: "[REDACTED]"

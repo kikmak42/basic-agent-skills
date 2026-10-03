@@ -1,0 +1,11 @@
+skill: get-date
+description: tests getting the current date
+cases:
+  - id: get-date::default_date
+    input: "what is the date"
+    trigger: true
+    expected_script: "get_date"
+    assertions:
+      not_empty: true
+      contains_year: true
+      contains_day_or_month: true

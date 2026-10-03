@@ -1,0 +1,33 @@
+skill: basic-math
+description: simple calculations
+cases:
+  - id: basic-math::mul
+    input: "17*83"
+    args: ["17*83"]
+    assertions:
+      result: 1411
+  - id: basic-math::pow
+    input: "2**10"
+    args: ["2**10"]
+    assertions:
+      result: 1024
+  - id: basic-math::complex
+    input: "(10+5)*3"
+    args: ["(10+5)*3"]
+    assertions:
+      result: 45
+  - id: basic-math::sqrt
+    input: "sqrt(4)"
+    args: ["math.sqrt(4)"]
+    assertions:
+      result: 2
+  - id: basic-math::div
+    input: "100/4"
+    args: ["100/4"]
+    assertions:
+      result: 25
+  - id: basic-math::float_add
+    input: "0.1+0.2"
+    args: ["0.1+0.2"]
+    assertions:
+      result: 0.3

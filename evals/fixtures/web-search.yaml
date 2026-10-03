@@ -1,0 +1,4 @@
+cases:
+  - id: web-search::skip_test
+    skip: true
+    reason: 'requires network/filesystem/external deps'

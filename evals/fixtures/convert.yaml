@@ -1,0 +1,23 @@
+skill: convert
+description: unit conversions
+cases:
+  - id: convert::km_to_miles
+    args: ["1", "km", "miles"]
+    assertions:
+      expected: 0.621371
+      tolerance: 0.001
+  - id: convert::c_to_f
+    args: ["100", "c", "f"]
+    assertions:
+      expected: 212.0
+      tolerance: 0.001
+  - id: convert::kg_to_lbs
+    args: ["1", "kg", "lbs"]
+    assertions:
+      expected: 2.20462
+      tolerance: 0.001
+  - id: convert::gb_to_mb
+    args: ["1", "gb", "mb"]
+    assertions:
+      expected: 1024.0
+      tolerance: 0.001
