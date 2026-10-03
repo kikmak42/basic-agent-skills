@@ -33,6 +33,7 @@ LLMs are trained on static snapshots of the world. They have no clock, no source
 | 15 | **Git Info** | `skills/git-info/` | 🪟 Win + 🐧 Unix | ✅ Done | Read current branch, status, recent commits, remotes — read-only, no guessing. |
 | 16 | **Regex Test** | `skills/regex/` | 🪟 Win + 🐧 Unix | ✅ Done | Test patterns, extract matches, replace, or count — handles edge cases LLMs get wrong. |
 | 17 | **Password Generator** | `skills/password-gen/` | 🪟 Win + 🐧 Unix | ✅ Done | Generate cryptographically secure passwords and passphrases with configurable rules. |
+| 18 | **Persistent Memory** | `skills/memory/` | 🪟 Win + 🐧 Unix | ✅ Done | Store, search, retrieve, and delete cross-session persistent notes & variables via local JSON store. |
 
 ---
 
@@ -217,7 +218,7 @@ See [`integrations/frameworks/README.md`](./integrations/frameworks/README.md) f
 basic-agent-skills/
 ├── README.md
 ├── LICENSE
-├── skills/                        # 10 OS-agnostic agent skills
+├── skills/                        # 18 OS-agnostic agent skills
 │   └── <skill>/
 │       ├── SKILL.md               # Agent instructions (OS detection + steps)
 │       └── scripts/
