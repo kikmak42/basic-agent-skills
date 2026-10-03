@@ -209,6 +209,7 @@ See [`integrations/frameworks/README.md`](./integrations/frameworks/README.md) f
 ```
 basic-agent-skills/
 ├── README.md
+├── LICENSE
 ├── skills/                        # 10 OS-agnostic agent skills
 │   └── <skill>/
 │       ├── SKILL.md               # Agent instructions (OS detection + steps)
@@ -253,3 +254,10 @@ basic-agent-skills/
 8. Add instructions for the skill to all IDE rules files in `integrations/ide/`.
 9. Review `guardrails/GUARDRAILS.md` and add skill-specific guardrail notes.
 10. Update the **Skill Registry** table in this README.
+
+---
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
