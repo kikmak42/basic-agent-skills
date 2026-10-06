@@ -10,7 +10,7 @@ with open(os.path.join(os.path.dirname(__file__), '../fixtures/uuid-gen.yaml')) 
 def test_uuid_gen(case, run_script, os_platform, skills_root):
     """Tests the uuid gen script"""
     script_ext = '.ps1' if os_platform == 'windows' else '.sh'
-    script_path = os.path.join(skills_root, 'uuid_gen', f'uuid_gen{script_ext}')
+    script_path = os.path.join(skills_root, 'uuid-gen', 'scripts', f'uuid_gen{script_ext}')
     
     if not os.path.exists(script_path):
         pytest.skip(f"Script {script_path} not found")

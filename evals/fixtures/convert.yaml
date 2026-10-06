@@ -2,7 +2,7 @@ skill: convert
 description: unit conversions
 cases:
   - id: convert::km_to_miles
-    args: ["1", "km", "miles"]
+    args: ["1", "km", "mi"]
     assertions:
       expected: 0.621371
       tolerance: 0.001
@@ -12,7 +12,7 @@ cases:
       expected: 212.0
       tolerance: 0.001
   - id: convert::kg_to_lbs
-    args: ["1", "kg", "lbs"]
+    args: ["1", "kg", "lb"]
     assertions:
       expected: 2.20462
       tolerance: 0.001

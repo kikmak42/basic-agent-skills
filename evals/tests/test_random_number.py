@@ -9,7 +9,7 @@ with open(os.path.join(os.path.dirname(__file__), '../fixtures/random-number.yam
 def test_random_number(case, run_script, os_platform, skills_root):
     """Tests the random_number script"""
     script_ext = '.ps1' if os_platform == 'windows' else '.sh'
-    script_path = os.path.join(skills_root, 'random_number', f'random_number{script_ext}')
+    script_path = os.path.join(skills_root, 'random-number', 'scripts', f'random_number{script_ext}')
     
     if not os.path.exists(script_path):
         pytest.skip(f"Script {script_path} not found")

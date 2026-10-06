@@ -37,7 +37,7 @@ switch ($Operation) {
             Write-Host "MATCH"
             Write-Host "Value: $($Match.Value)"
             for ($i = 0; $i -lt $Match.Groups.Count; $i++) {
-                Write-Host "Group $i: $($Match.Groups[$i].Value)"
+                Write-Host "Group ${i}: $($Match.Groups[$i].Value)"
             }
         } else {
             Write-Host "NO MATCH"

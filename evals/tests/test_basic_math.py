@@ -9,7 +9,7 @@ with open(os.path.join(os.path.dirname(__file__), '../fixtures/basic-math.yaml')
 def test_basic_math(case, run_script, os_platform, skills_root):
     """Tests the basic math script"""
     script_ext = '.ps1' if os_platform == 'windows' else '.sh'
-    script_path = os.path.join(skills_root, 'basic_math', f'basic_math{script_ext}')
+    script_path = os.path.join(skills_root, 'basic-math', 'scripts', f'calculate{script_ext}')
     
     if not os.path.exists(script_path):
         pytest.skip(f"Script {script_path} not found")

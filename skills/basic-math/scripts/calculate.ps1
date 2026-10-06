@@ -33,8 +33,10 @@ param(
 )
 
 # Replace Python-style ** with PowerShell [Math]::Pow for exponentiation
-# e.g. "2 ** 10"  ->  "[Math]::Pow(2, 10)"
 $expr = $Expression -replace '(\S+)\s*\*\*\s*(\S+)', '[Math]::Pow($1, $2)'
+
+# Add support for python-like math.sqrt or sqrt
+$expr = $expr -replace '(?:math\.)?sqrt\(', '[Math]::Sqrt('
 
 try {
     $result = Invoke-Expression $expr

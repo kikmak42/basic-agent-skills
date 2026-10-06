@@ -24,7 +24,7 @@ def run_script(os_platform):
             env_vars.update(env)
         
         if os_platform == 'windows':
-            cmd = ['pwsh', '-NoProfile', '-NonInteractive', '-Command', script_path] + args
+            cmd = ['pwsh', '-NoProfile', '-NonInteractive', '-File', script_path] + args
         else:
             cmd = ['bash', script_path] + args
             

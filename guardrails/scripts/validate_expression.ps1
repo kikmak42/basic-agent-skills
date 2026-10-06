@@ -21,7 +21,7 @@ $blockedPatterns = @(
     "&",
     "\|",
     ";",
-    "`$"
+    "\\$"
 )
 
 foreach ($pattern in $blockedPatterns) {

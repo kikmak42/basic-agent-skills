@@ -12,7 +12,7 @@ cases:
       max: 6
   - id: random-number::float_val
     input: "random float"
-    args: ["--float"]
+    args: ["--type", "float", "--min", "0", "--max", "1"]
     trigger: true
     expected_script: "random_number"
     assertions:
